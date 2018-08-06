@@ -1,7 +1,6 @@
 package com.appsdeveloperblog.app.ws.service.impl;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -10,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -44,12 +42,15 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired 
 	PasswordResetTokenRepository passwordResetTokenRepository;
-
+	
+	@Autowired
+    AmazonSES amazonSES;
+ 
 	@Override
 	public UserDto createUser(UserDto user) {
 
 		if (userRepository.findByEmail(user.getEmail()) != null)
-			throw new RuntimeException("Record already exists");
+			throw new UserServiceException("Record already exists");
 
 		for(int i=0;i<user.getAddresses().size();i++)
 		{
@@ -75,7 +76,7 @@ public class UserServiceImpl implements UserService {
 		UserDto returnValue  = modelMapper.map(storedUserDetails, UserDto.class);
 		
         // Send an email message to user to verify their email address
-		new AmazonSES().verifyEmail(returnValue);
+		amazonSES.verifyEmail(returnValue);
 
 		return returnValue;
 	}
@@ -89,6 +90,7 @@ public class UserServiceImpl implements UserService {
 
 		UserDto returnValue = new UserDto();
 		BeanUtils.copyProperties(userEntity, returnValue);
+ 
 		return returnValue;
 	}
 
