@@ -1,9 +1,11 @@
 package com.appsdeveloperblog.app.ws.service.impl;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.appsdeveloperblog.app.ws.exceptions.UserServiceException;
+import com.appsdeveloperblog.app.ws.io.entity.AddressEntity;
 import com.appsdeveloperblog.app.ws.io.entity.PasswordResetTokenEntity;
 import com.appsdeveloperblog.app.ws.io.entity.UserEntity;
 import com.appsdeveloperblog.app.ws.io.repository.PasswordResetTokenRepository;
@@ -27,6 +30,7 @@ import com.appsdeveloperblog.app.ws.shared.Utils;
 import com.appsdeveloperblog.app.ws.shared.dto.AddressDTO;
 import com.appsdeveloperblog.app.ws.shared.dto.UserDto;
 import com.appsdeveloperblog.app.ws.ui.model.response.ErrorMessages;
+import com.appsdeveloperblog.app.ws.ui.model.response.UserRest;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -68,7 +72,6 @@ public class UserServiceImpl implements UserService {
 		userEntity.setUserId(publicUserId);
 		userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 		userEntity.setEmailVerificationToken(utils.generateEmailVerificationToken(publicUserId));
-		userEntity.setEmailVerificationStatus(false);
 
 		UserEntity storedUserDetails = userRepository.save(userEntity);
  
@@ -135,8 +138,7 @@ public class UserServiceImpl implements UserService {
 		userEntity.setLastName(user.getLastName());
 
 		UserEntity updatedUserDetails = userRepository.save(userEntity);
-
-		BeanUtils.copyProperties(updatedUserDetails, returnValue);
+		returnValue = new ModelMapper().map(updatedUserDetails, UserDto.class);
 
 		return returnValue;
 	}
