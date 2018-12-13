@@ -1,17 +1,20 @@
 package com.appsdeveloperblog.app.ws.ui.contoller;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,11 +36,10 @@ import com.appsdeveloperblog.app.ws.ui.model.response.AddressesRest;
 import com.appsdeveloperblog.app.ws.ui.model.response.OperationStatusModel;
 import com.appsdeveloperblog.app.ws.ui.model.response.RequestOperationStatus;
 import com.appsdeveloperblog.app.ws.ui.model.response.UserRest;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/users") // http://localhost:8080/users
+//@CrossOrigin(origins= {"http://localhost:8083", "http://localhost:8084"})
 public class UserController {
 
 	@Autowired
@@ -48,7 +50,7 @@ public class UserController {
 
 	@Autowired
 	AddressService addressesService;
-
+	
 	@GetMapping(path = "/{id}", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
 	public UserRest getUser(@PathVariable String id) {
 		UserRest returnValue = new UserRest();
