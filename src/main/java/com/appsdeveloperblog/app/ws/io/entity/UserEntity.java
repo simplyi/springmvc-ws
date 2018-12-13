@@ -9,8 +9,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
-@Entity(name="users")
+@Entity
+@Table(name="users")
 public class UserEntity implements Serializable {
  
 	private static final long serialVersionUID = 5313493413859894403L;
