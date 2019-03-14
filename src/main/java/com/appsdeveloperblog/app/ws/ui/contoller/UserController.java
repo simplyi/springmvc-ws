@@ -14,7 +14,6 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,6 +36,10 @@ import com.appsdeveloperblog.app.ws.ui.model.response.OperationStatusModel;
 import com.appsdeveloperblog.app.ws.ui.model.response.RequestOperationStatus;
 import com.appsdeveloperblog.app.ws.ui.model.response.UserRest;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+
 @RestController
 @RequestMapping("/users") // http://localhost:8080/users
 //@CrossOrigin(origins= {"http://localhost:8083", "http://localhost:8084"})
@@ -51,6 +54,11 @@ public class UserController {
 	@Autowired
 	AddressService addressesService;
 	
+	@ApiOperation(value="The Get User Details Web Service Endpoint",
+			notes="${userController.GetUser.ApiOperation.Notes}")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name="authorization", value="${userController.authorizationHeader.description}", paramType="header")
+	})
 	@GetMapping(path = "/{id}", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
 	public UserRest getUser(@PathVariable String id) {
 		UserRest returnValue = new UserRest();
@@ -81,6 +89,9 @@ public class UserController {
 	@PutMapping(path = "/{id}", consumes = { MediaType.APPLICATION_XML_VALUE,
 			MediaType.APPLICATION_JSON_VALUE }, produces = { MediaType.APPLICATION_XML_VALUE,
 					MediaType.APPLICATION_JSON_VALUE })
+	@ApiImplicitParams({
+		@ApiImplicitParam(name="authorization", value="${userController.authorizationHeader.description}", paramType="header")
+	})
 	public UserRest updateUser(@PathVariable String id, @RequestBody UserDetailsRequestModel userDetails) {
 		UserRest returnValue = new UserRest();
 
@@ -94,6 +105,9 @@ public class UserController {
 	}
 
 	@DeleteMapping(path = "/{id}", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
+	@ApiImplicitParams({
+		@ApiImplicitParam(name="authorization", value="${userController.authorizationHeader.description}", paramType="header")
+	})
 	public OperationStatusModel deleteUser(@PathVariable String id) {
 		OperationStatusModel returnValue = new OperationStatusModel();
 		returnValue.setOperationName(RequestOperationName.DELETE.name());
@@ -104,6 +118,9 @@ public class UserController {
 		return returnValue;
 	}
 
+	@ApiImplicitParams({
+		@ApiImplicitParam(name="authorization", value="${userController.authorizationHeader.description}", paramType="header")
+	})
 	@GetMapping(produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
 	public List<UserRest> getUsers(@RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "limit", defaultValue = "2") int limit) {
@@ -125,6 +142,9 @@ public class UserController {
 	}
 
 	// http://localhost:8080/mobile-app-ws/users/jfhdjeufhdhdj/addressses
+	@ApiImplicitParams({
+		@ApiImplicitParam(name="authorization", value="${userController.authorizationHeader.description}", paramType="header")
+	})
 	@GetMapping(path = "/{id}/addresses", produces = { MediaType.APPLICATION_XML_VALUE,
 			MediaType.APPLICATION_JSON_VALUE, "application/hal+json" })
 	public Resources<AddressesRest> getUserAddresses(@PathVariable String id) {
@@ -150,6 +170,9 @@ public class UserController {
 		return new Resources<>(addressesListRestModel);
 	}
 
+	@ApiImplicitParams({
+		@ApiImplicitParam(name="authorization", value="${userController.authorizationHeader.description}", paramType="header")
+	})
 	@GetMapping(path = "/{userId}/addresses/{addressId}", produces = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE, "application/hal+json" })
 	public Resource<AddressesRest> getUserAddress(@PathVariable String userId, @PathVariable String addressId) {
