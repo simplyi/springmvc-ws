@@ -10,6 +10,9 @@ target/
 .springBeans
 .sts4-cache
 
+.metadata
+
+
 ### IntelliJ IDEA ###
 .idea
 *.iws
