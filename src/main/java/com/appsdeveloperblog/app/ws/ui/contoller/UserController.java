@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
  
 import org.springframework.http.MediaType;
@@ -107,23 +108,19 @@ public class UserController {
 		List<UserRest> returnValue = new ArrayList<>();
 
 		List<UserDto> users = userService.getUsers(page, limit);
-		
-		Type listType = new TypeToken<List<UserRest>>() {
-		}.getType();
-		returnValue = new ModelMapper().map(users, listType);
-
-		/*for (UserDto userDto : users) {
+ 
+		for (UserDto userDto : users) {
 			UserRest userModel = new UserRest();
 			BeanUtils.copyProperties(userDto, userModel);
 			returnValue.add(userModel);
-		}*/
+		}
 
 		return returnValue;
 	}
 
 	// http://localhost:8080/mobile-app-ws/users/jfhdjeufhdhdj/addressses
 	@GetMapping(path = "/{id}/addresses", produces = { MediaType.APPLICATION_XML_VALUE,
-			MediaType.APPLICATION_JSON_VALUE, "application/hal+json" })
+			MediaType.APPLICATION_JSON_VALUE})
 	public List<AddressesRest> getUserAddresses(@PathVariable String id) {
 		List<AddressesRest> returnValue = new ArrayList<>();
 
@@ -139,8 +136,8 @@ public class UserController {
 	}
 
 	@GetMapping(path = "/{userId}/addresses/{addressId}", produces = { MediaType.APPLICATION_JSON_VALUE,
-			MediaType.APPLICATION_XML_VALUE, "application/hal+json" })
-	public AddressesRest getUserAddress(@PathVariable String userId, @PathVariable String addressId) {
+			MediaType.APPLICATION_XML_VALUE})
+	public AddressesRest getUserAddress(@PathVariable String addressId) {
 
 		AddressDTO addressesDto = addressService.getAddress(addressId);
 
