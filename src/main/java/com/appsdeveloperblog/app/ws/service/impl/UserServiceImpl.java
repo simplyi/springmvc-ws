@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
 		UserDto returnValue  = modelMapper.map(storedUserDetails, UserDto.class);
 		
         // Send an email message to user to verify their email address
-		amazonSES.verifyEmail(returnValue);
+		//amazonSES.verifyEmail(returnValue);
 
 		return returnValue;
 	}
@@ -121,10 +121,10 @@ public class UserServiceImpl implements UserService {
 		
 		return new UserPrincipal(userEntity);
 
-//		return new User(userEntity.getEmail(), userEntity.getEncryptedPassword(), 
-//				userEntity.getEmailVerificationStatus(),
-//				true, true,
-//				true, new ArrayList<>());
+		// return new User(userEntity.getEmail(), userEntity.getEncryptedPassword(), 
+		// 		userEntity.getEmailVerificationStatus(),
+		// 		true, true,
+		// 		true, new ArrayList<>());
 
 		//return new User(userEntity.getEmail(), userEntity.getEncryptedPassword(), new ArrayList<>());
 	}
