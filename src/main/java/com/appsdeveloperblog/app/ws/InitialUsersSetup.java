@@ -60,8 +60,10 @@ public class InitialUsersSetup {
 		adminUser.setEncryptedPassword(bCryptPasswordEncoder.encode("12345678"));
 		adminUser.setRoles(Arrays.asList(roleAdmin));
 		
-		userRepository.save(adminUser);
-		
+		UserEntity storedUserDetails = userRepository.findByEmail("admin@test.com");
+		if (storedUserDetails == null) {
+		   userRepository.save(adminUser);
+		}
 	}
 	
 	@Transactional
