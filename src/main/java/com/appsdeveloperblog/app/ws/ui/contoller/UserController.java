@@ -10,6 +10,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.MediaType;
@@ -138,7 +139,7 @@ public class UserController {
 
 	@GetMapping(path = "/{userId}/addresses/{addressId}", produces = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE})
-	public AddressesRest getUserAddress(@PathVariable String userId, @PathVariable String addressId) {
+	public EntityModel<AddressesRest> getUserAddress(@PathVariable String userId, @PathVariable String addressId) {
 
 		AddressDTO addressesDto = addressService.getAddress(addressId);
 
@@ -156,12 +157,12 @@ public class UserController {
 				.slash("addresses")
 				.slash(addressId)
 				.withSelfRel();
-		
-		returnValue.add(userLink);
-		returnValue.add(userAddressesLink);
-		returnValue.add(selfLink);
-		
-		return returnValue;
+//		
+//		returnValue.add(userLink);
+//		returnValue.add(userAddressesLink);
+//		returnValue.add(selfLink);
+ 	
+		return EntityModel.of(returnValue, Arrays.asList(userLink,userAddressesLink, selfLink));
 	}
 
 }
