@@ -132,7 +132,15 @@ public class UserController {
 		if (addressesDTO != null && !addressesDTO.isEmpty()) {
 			Type listType = new TypeToken<List<AddressesRest>>() {
 			}.getType();
-			returnValue = new ModelMapper().map(addressesDTO, listType);	 
+			returnValue = new ModelMapper().map(addressesDTO, listType);
+			
+			for (AddressesRest addressRest : returnValue) {
+				Link selfLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class)
+						.getUserAddress(id, addressRest.getAddressId()))
+						.withSelfRel();
+				addressRest.add(selfLink);
+			}
+			
 		}
 		
 		Link userLink = WebMvcLinkBuilder.linkTo(UserController.class).slash(id).withRel("user");
