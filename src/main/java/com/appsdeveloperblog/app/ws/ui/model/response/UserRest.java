@@ -1,8 +1,9 @@
 package com.appsdeveloperblog.app.ws.ui.model.response;
 
 import java.util.List;
+import org.springframework.hateoas.RepresentationModel;
 
-public class UserRest {
+public class UserRest extends RepresentationModel{
 	private String userId;
 	private String firstName;
 	private String lastName;
