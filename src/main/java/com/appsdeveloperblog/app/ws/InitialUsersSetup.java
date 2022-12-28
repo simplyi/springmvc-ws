@@ -61,7 +61,7 @@ public class InitialUsersSetup {
 		adminUser.setRoles(Arrays.asList(roleAdmin));
 		
 		UserEntity storedUserDetails = userRepository.findByEmail("admin@test.com");
-		if (storedUserDetails == null) {
+		if (storedUserDetails == null) { 
 		   userRepository.save(adminUser);
 		}
 	}
