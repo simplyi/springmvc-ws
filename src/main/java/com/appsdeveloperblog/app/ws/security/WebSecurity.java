@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.appsdeveloperblog.app.ws.service.UserService;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -28,13 +29,22 @@ public class WebSecurity {
         // Configure AuthenticationManagerBuilder
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
         authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
+        
+        AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
+        
+        // Customize Login URL path 
+        AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManager);
+        authenticationFilter.setFilterProcessesUrl("/users/login");
 
         http
                 .cors().and()
                 .csrf().disable().authorizeHttpRequests()
                 .requestMatchers(HttpMethod.POST, "/users")
                 .permitAll()
-                .anyRequest().authenticated();
+                .anyRequest().authenticated()
+                .and()
+                .authenticationManager(authenticationManager)
+                .addFilter(authenticationFilter);
 
         return http.build();
     }
