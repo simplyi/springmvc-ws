@@ -44,7 +44,8 @@ public class WebSecurity {
                 .anyRequest().authenticated()
                 .and()
                 .authenticationManager(authenticationManager)
-                .addFilter(authenticationFilter);
+                .addFilter(authenticationFilter)
+                .addFilter(new AuthorizationFilter(authenticationManager));
 
         return http.build();
     }
