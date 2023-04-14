@@ -1,7 +1,5 @@
 package com.appsdeveloperblog.app.ws.ui.contoller;
 
-import com.appsdeveloperblog.app.ws.io.repository.UserRepository;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,10 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.appsdeveloperblog.app.ws.service.UserService;
-import com.appsdeveloperblog.app.ws.shared.Utils;
 import com.appsdeveloperblog.app.ws.shared.dto.UserDto;
 import com.appsdeveloperblog.app.ws.ui.model.request.UserDetailsRequestModel;
 import com.appsdeveloperblog.app.ws.ui.model.response.UserRest;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @RequestMapping("users") // http://localhost:8080/users
@@ -40,5 +39,16 @@ public class UserController {
 
         return returnValue;
     }
+    
+    @PutMapping
+    public String updateUser() {
+        return "update user was called";
+    }
+    
+    @DeleteMapping
+    public String deleteUser() {
+        return "delete user was called";
+    }
+
 
 }
