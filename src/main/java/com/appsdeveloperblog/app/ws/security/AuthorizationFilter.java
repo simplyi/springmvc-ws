@@ -56,7 +56,7 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
 
         String token = authorizationHeader.replace(SecurityConstants.TOKEN_PREFIX, "");
 
-        byte[] secretKeyBytes = Base64.getEncoder().encode(SecurityConstants.TOKEN_SECRET.getBytes());
+        byte[] secretKeyBytes = Base64.getEncoder().encode(new SecurityConstants().getTokenSecret().getBytes());
         SecretKey secretKey = new SecretKeySpec(secretKeyBytes, SignatureAlgorithm.HS512.getJcaName());
 
         JwtParser jwtParser = Jwts.parserBuilder()
