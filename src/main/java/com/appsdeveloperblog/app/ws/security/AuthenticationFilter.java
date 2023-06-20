@@ -22,53 +22,61 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.time.Instant;
+import java.util.Base64;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import org.springframework.security.core.userdetails.User;
 
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
     }
-    
+
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req,
-                                                HttpServletResponse res) throws AuthenticationException {
+            HttpServletResponse res) throws AuthenticationException {
         try {
- 
-        	UserLoginRequestModel creds = new ObjectMapper()
+
+            UserLoginRequestModel creds = new ObjectMapper()
                     .readValue(req.getInputStream(), UserLoginRequestModel.class);
-            
+
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             creds.getEmail(),
                             creds.getPassword(),
                             new ArrayList<>())
             );
-            
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-    
+
     @Override
-    protected void successfulAuthentication(HttpServletRequest req,
-                                            HttpServletResponse res,
-                                            FilterChain chain,
-                                            Authentication auth) throws IOException, ServletException {
-        
-        String userName = ((UserPrincipal) auth.getPrincipal()).getUsername();  
-        
-        String token = Jwts.builder()
-                .setSubject(userName)
-                .setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
-                .signWith(SignatureAlgorithm.HS512, SecurityConstants.getTokenSecret() )
-                .compact();
+    protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
+            Authentication auth) throws IOException, ServletException {
+
+        byte[] secretKeyBytes = Base64.getEncoder().encode(SecurityConstants.getTokenSecret().getBytes());
+        SecretKey secretKey = new SecretKeySpec(secretKeyBytes, SignatureAlgorithm.HS512.getJcaName());
+        Instant now = Instant.now();
+
+        String userName = ((UserPrincipal) auth.getPrincipal()).getUsername();
         UserService userService = (UserService)SpringApplicationContext.getBean("userServiceImpl");
         UserDto userDto = userService.getUser(userName);
-        
+
+        String token = Jwts.builder()
+                .setSubject(userName)
+                .setExpiration(
+                        Date.from(now.plusMillis(SecurityConstants.EXPIRATION_TIME)))
+                .setIssuedAt(Date.from(now)).signWith(secretKey, SignatureAlgorithm.HS512).compact();
+
         res.addHeader(SecurityConstants.HEADER_STRING, SecurityConstants.TOKEN_PREFIX + token);
         res.addHeader("UserID", userDto.getUserId());
 
-    }  
+    }
 
 }

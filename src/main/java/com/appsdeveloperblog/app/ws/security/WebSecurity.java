@@ -49,8 +49,8 @@ public class WebSecurity{
         AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
         
      http
-        .cors().and()
-        .csrf().disable().authorizeHttpRequests()
+        .csrf((csrf) -> csrf.disable())
+         .authorizeHttpRequests((authz) -> authz
         .requestMatchers(HttpMethod.POST, SecurityConstants.SIGN_UP_URL)
         .permitAll()
         .requestMatchers(HttpMethod.GET, SecurityConstants.VERIFICATION_EMAIL_URL)
@@ -61,17 +61,18 @@ public class WebSecurity{
         .permitAll()
         .requestMatchers(SecurityConstants.H2_CONSOLE)
         .permitAll()
-        .requestMatchers("/v2/api-docs", "/configuration/**", "/swagger*/**", "/webjars/**")
+        .requestMatchers("/api-docs","/swagger-ui/**")
         .permitAll()
         //.antMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
-        .anyRequest().authenticated().and()
+        .anyRequest().authenticated())
+     
         .addFilter(getAuthenticationFilter(authenticationManager))
         .addFilter(new AuthorizationFilter(authenticationManager, userRepository))
         .authenticationManager(authenticationManager)
-        .sessionManagement()
-        .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        .sessionManagement((session) -> session
+        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         
-        http.headers().frameOptions().disable();
+         http.headers((headers) -> headers.frameOptions((frameOptions) -> frameOptions.sameOrigin()));
         
         return http.build();
     }
