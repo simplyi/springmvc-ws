@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @EnableMethodSecurity(securedEnabled=true, prePostEnabled=true)
 @EnableWebSecurity
@@ -59,7 +60,7 @@ public class WebSecurity{
         .permitAll()
         .requestMatchers(HttpMethod.POST, SecurityConstants.PASSWORD_RESET_URL)
         .permitAll()
-        .requestMatchers(SecurityConstants.H2_CONSOLE)
+        .requestMatchers(new AntPathRequestMatcher("/h2-console/**"))
         .permitAll()
         .requestMatchers("/api-docs","/swagger-ui/**")
         .permitAll()
