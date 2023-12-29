@@ -15,39 +15,35 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class WebSecurity {
 
-    private final UserService userDetailsService;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+	private final UserService userDetailsService;
+	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public WebSecurity(UserService userDetailsService,
-            BCryptPasswordEncoder bCryptPasswordEncoder) {
-        this.userDetailsService = userDetailsService;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-    }
+	public WebSecurity(UserService userDetailsService, BCryptPasswordEncoder bCryptPasswordEncoder) {
+		this.userDetailsService = userDetailsService;
+		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+	}
 
-    @Bean
-    public SecurityFilterChain configure(HttpSecurity http) throws Exception {
-        // Configure AuthenticationManagerBuilder
-        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
-        
-        AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
-        
-        // Customize Login URL path 
-        AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManager);
-        authenticationFilter.setFilterProcessesUrl("/users/login");
+	@Bean
+	SecurityFilterChain configure(HttpSecurity http) throws Exception {
+		// Configure AuthenticationManagerBuilder
+		AuthenticationManagerBuilder authenticationManagerBuilder = http
+				.getSharedObject(AuthenticationManagerBuilder.class);
+		authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
 
-        http
-                .cors().and()
-                .csrf().disable().authorizeHttpRequests()
-                .requestMatchers(HttpMethod.POST, "/users")
-                .permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .authenticationManager(authenticationManager)
-                .addFilter(authenticationFilter)
-                .addFilter(new AuthorizationFilter(authenticationManager));
+		AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
 
-        return http.build();
-    }
+		// Customize Login URL path
+		AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManager);
+		authenticationFilter.setFilterProcessesUrl("/users/login");
+
+		http.csrf((csrf) -> csrf.disable())
+				.authorizeHttpRequests((authz) -> authz.requestMatchers(HttpMethod.POST, "/users").permitAll()
+						.anyRequest().authenticated())
+				.authenticationManager(authenticationManager)
+				.addFilter(authenticationFilter)
+				.addFilter(new AuthorizationFilter(authenticationManager));
+
+		return http.build();
+	}
 
 }

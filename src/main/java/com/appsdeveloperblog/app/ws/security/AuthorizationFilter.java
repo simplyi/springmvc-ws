@@ -14,6 +14,7 @@ import io.jsonwebtoken.JwtParser;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -56,15 +57,15 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
 
         String token = authorizationHeader.replace(SecurityConstants.TOKEN_PREFIX, "");
 
-        byte[] secretKeyBytes = Base64.getEncoder().encode(new SecurityConstants().getTokenSecret().getBytes());
-        SecretKey secretKey = new SecretKeySpec(secretKeyBytes, SignatureAlgorithm.HS512.getJcaName());
-
-        JwtParser jwtParser = Jwts.parserBuilder()
-                .setSigningKey(secretKey)
+        byte[] secretKeyBytes = SecurityConstants.getTokenSecret().getBytes();
+        SecretKey key = Keys.hmacShaKeyFor(secretKeyBytes);
+ 
+        JwtParser parser = Jwts.parser()
+                .verifyWith(key)
                 .build();
 
-        Jwt<Header, Claims> jwt = jwtParser.parse(token);
-        String subject = jwt.getBody().getSubject();
+        Claims claims = parser.parseSignedClaims(token).getPayload();
+        String subject = (String) claims.get("sub");
 
         if (subject == null) {
             return null;

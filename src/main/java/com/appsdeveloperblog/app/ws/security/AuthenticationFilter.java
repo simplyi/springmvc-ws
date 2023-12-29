@@ -7,6 +7,7 @@ import com.appsdeveloperblog.app.ws.ui.model.request.UserLoginRequestModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,16 +52,16 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
             Authentication auth) throws IOException, ServletException {
  
         // Generate JWT and add it to a Response Header
-        byte[] secretKeyBytes = Base64.getEncoder().encode(new SecurityConstants().getTokenSecret().getBytes());
-        SecretKey secretKey = new SecretKeySpec(secretKeyBytes, SignatureAlgorithm.HS512.getJcaName());
+		byte[] secretKeyBytes = SecurityConstants.getTokenSecret().getBytes();
+		SecretKey secretKey = Keys.hmacShaKeyFor(secretKeyBytes);
         Instant now = Instant.now();
 
         String userName = ((User) auth.getPrincipal()).getUsername();
         String token = Jwts.builder()
-                .setSubject(userName)
-                .setExpiration(Date.from(Instant.now().plusMillis(SecurityConstants.EXPIRATION_TIME)))
-                .setIssuedAt(Date.from(now))
-                .signWith(secretKey, SignatureAlgorithm.HS512)
+                .subject(userName)
+                .expiration(Date.from(now.plusMillis(SecurityConstants.EXPIRATION_TIME)))
+                .issuedAt(Date.from(now))
+                .signWith(secretKey)   
                 .compact();
 
         UserService userService = (UserService)SpringApplicationContext.getBean("userServiceImpl");
