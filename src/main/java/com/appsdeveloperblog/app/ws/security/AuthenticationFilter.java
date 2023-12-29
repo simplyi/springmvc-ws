@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -59,20 +60,21 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
             Authentication auth) throws IOException, ServletException {
-
-        byte[] secretKeyBytes = Base64.getEncoder().encode(SecurityConstants.getTokenSecret().getBytes());
-        SecretKey secretKey = new SecretKeySpec(secretKeyBytes, SignatureAlgorithm.HS512.getJcaName());
+ 
+		byte[] secretKeyBytes = SecurityConstants.getTokenSecret().getBytes();
+		SecretKey secretKey = Keys.hmacShaKeyFor(secretKeyBytes);
         Instant now = Instant.now();
 
         String userName = ((UserPrincipal) auth.getPrincipal()).getUsername();
         UserService userService = (UserService)SpringApplicationContext.getBean("userServiceImpl");
         UserDto userDto = userService.getUser(userName);
-
+      
         String token = Jwts.builder()
-                .setSubject(userName)
-                .setExpiration(
-                        Date.from(now.plusMillis(SecurityConstants.EXPIRATION_TIME)))
-                .setIssuedAt(Date.from(now)).signWith(secretKey, SignatureAlgorithm.HS512).compact();
+                .subject(userName)
+                .expiration(Date.from(now.plusMillis(SecurityConstants.EXPIRATION_TIME)))
+                .issuedAt(Date.from(now))
+                .signWith(secretKey)   
+                .compact();
 
         res.addHeader(SecurityConstants.HEADER_STRING, SecurityConstants.TOKEN_PREFIX + token);
         res.addHeader("UserID", userDto.getUserId());

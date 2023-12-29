@@ -4,14 +4,18 @@ import java.security.SecureRandom;
 import java.util.Date;
 import java.util.Random;
 
+import javax.crypto.SecretKey;
+
 import org.springframework.stereotype.Service;
 
 import com.appsdeveloperblog.app.ws.security.SecurityConstants;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 
 @Service
 public class Utils {
@@ -41,8 +45,15 @@ public class Utils {
 		boolean returnValue = false;
 
 		try {
-			Claims claims = Jwts.parser().setSigningKey(SecurityConstants.getTokenSecret()).parseClaimsJws(token)
-					.getBody();
+ 
+			byte[] secretKeyBytes = SecurityConstants.getTokenSecret().getBytes();
+			SecretKey key = Keys.hmacShaKeyFor(secretKeyBytes);
+			
+			JwtParser parser = Jwts.parser()
+	                .verifyWith(key)
+	                .build();
+			
+			Claims claims = parser.parseSignedClaims(token).getPayload();
 
 			Date tokenExpirationDate = claims.getExpiration();
 			Date todayDate = new Date();
