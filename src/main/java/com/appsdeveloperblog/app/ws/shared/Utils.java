@@ -77,11 +77,12 @@ public class Utils {
         SecretKey secretKey = Keys.hmacShaKeyFor(secretKeyBytes);
         Instant now = Instant.now();
 
-        String token = Jwts.builder().subject(userId)
-                .expiration(Date.from(now.plusMillis(SecurityConstants.EXPIRATION_TIME))).issuedAt(Date.from(now))
-                .signWith(secretKey).compact();
-
-        return token;
+        return Jwts.builder()
+                .subject(userId)
+                .expiration(Date.from(now.plusMillis(SecurityConstants.EXPIRATION_TIME)))
+                .issuedAt(Date.from(now))
+                .signWith(secretKey)
+                .compact();
     }
 
 }

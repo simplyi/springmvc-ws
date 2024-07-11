@@ -50,7 +50,7 @@ class UserRepositoryTest {
 		String firstName="Sergey";
 		List<UserEntity> users = userRepository.findUserByFirstName(firstName);
 		assertNotNull(users);
-		assertTrue(users.size() == 2);
+		assertTrue(users.size() == 3);
 		
 		UserEntity user = users.get(0);
 		assertTrue(user.getFirstName().equals(firstName));
@@ -62,7 +62,7 @@ class UserRepositoryTest {
 		String lastName="Kargopolov";
 		List<UserEntity> users = userRepository.findUserByLastName(lastName);
 		assertNotNull(users);
-		assertTrue(users.size() == 2);
+		assertTrue(users.size() == 3);
 		
 		UserEntity user = users.get(0);
 		assertTrue(user.getLastName().equals(lastName));
@@ -74,7 +74,7 @@ class UserRepositoryTest {
 		String keyword="erg";
 		List<UserEntity> users = userRepository.findUsersByKeyword(keyword);
 		assertNotNull(users);
-		assertTrue(users.size() == 2);
+		assertTrue(users.size() == 3);
 		
 		UserEntity user = users.get(0);
 		assertTrue(
@@ -89,7 +89,7 @@ class UserRepositoryTest {
 		String keyword="erg";
 		List<Object[]> users = userRepository.findUserFirstNameAndLastNameByKeyword(keyword);
 		assertNotNull(users);
-		assertTrue(users.size() == 2);
+		assertTrue(users.size() == 3);
 		
 		Object[] user = users.get(0);
 		

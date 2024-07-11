@@ -19,8 +19,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 	UserEntity findByUserId(String userId);
 	UserEntity findUserByEmailVerificationToken(String token); 
 	
-	@Query(value="select * from users u where u.email_verification_status = 'true'", 
-			countQuery="select count(*) from users u where u.email_verification_status = 'true'", 
+	@Query(value="select * from users u where u.email_verification_status = true",
+			countQuery="select count(*) from users u where u.email_verification_status = true",
 			nativeQuery = true)
 	Page<UserEntity> findAllUsersWithConfirmedEmailAddress( Pageable pageableRequest );
 	
