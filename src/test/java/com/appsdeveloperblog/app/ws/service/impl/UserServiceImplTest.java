@@ -25,7 +25,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.appsdeveloperblog.app.ws.exceptions.UserServiceException;
 import com.appsdeveloperblog.app.ws.io.entity.AddressEntity;
+import com.appsdeveloperblog.app.ws.io.entity.RoleEntity;
 import com.appsdeveloperblog.app.ws.io.entity.UserEntity;
+import com.appsdeveloperblog.app.ws.io.repository.RoleRepository;
 import com.appsdeveloperblog.app.ws.io.repository.UserRepository;
 import com.appsdeveloperblog.app.ws.shared.AmazonSES;
 import com.appsdeveloperblog.app.ws.shared.Utils;
@@ -50,6 +52,9 @@ class UserServiceImplTest {
 
 	@Mock
 	BCryptPasswordEncoder bCryptPasswordEncoder;
+
+	@Mock
+	RoleRepository roleRepository;
  
 	String userId = "hhty57ehfy";
 	String encryptedPassword = "74hghd8474jf";
@@ -106,6 +111,7 @@ class UserServiceImplTest {
 		userDto.setLastName("Kargopolov");
 		userDto.setPassword("12345678");
 		userDto.setEmail("test@test.com");
+		userDto.setRoles(new ArrayList<String>());
  	
 		assertThrows(UserServiceException.class,
 
@@ -124,6 +130,7 @@ class UserServiceImplTest {
 		when(utils.generateUserId(anyInt())).thenReturn(userId);
 		when(bCryptPasswordEncoder.encode(anyString())).thenReturn(encryptedPassword);
 		when(userRepository.save(any(UserEntity.class))).thenReturn(userEntity);
+		when(roleRepository.findByName(any(String.class))).thenReturn(new RoleEntity());
 		Mockito.doNothing().when(amazonSES).verifyEmail(any(UserDto.class));
  		
 		UserDto userDto = new UserDto();
@@ -132,6 +139,7 @@ class UserServiceImplTest {
 		userDto.setLastName("Kargopolov");
 		userDto.setPassword("12345678");
 		userDto.setEmail("test@test.com");
+		userDto.setRoles(new ArrayList<>());
 
 		UserDto storedUserDetails = userService.createUser(userDto);
 		assertNotNull(storedUserDetails);
